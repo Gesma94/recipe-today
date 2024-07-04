@@ -1,0 +1,15 @@
+enum MessageRole {
+  USER
+  SYSTEM
+  ASSISTANT
+}
+
+model Message {
+  id         Int         @id @default(autoincrement())
+  openaui_id String
+  createdAt  DateTime    @default(now())
+  role       MessageRole
+  content    String
+  chat       Chat        @relation(fields: [chatId], references: [id])
+  chatId     Int         @unique
+}

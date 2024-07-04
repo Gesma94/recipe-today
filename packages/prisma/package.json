@@ -1,0 +1,37 @@
+{
+  "name": "@recipe-today/prisma",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    ".": "./dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "pnpm run clean && tsc",
+    "typecheck": "tsc --noEmit",
+    "generate": "pnpm exec prisma generate",
+    "migrate:dev": "pnpm exec prisma migrate dev",
+    "migrate:deploy": "pnpm exec prisma migrate deploy",
+    "migrate:reset": "pnpm exec prisma migrate reset",
+    "format": "pnpm exec prisma format",
+    "studio": "pnpm exec prisma studio",
+    "seed": "tsx src/seed.ts"
+  },
+  "keywords": [],
+  "author": "Matteo Gesmundo",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "@prisma/client": "^5.15.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "prisma": "^5.15.0",
+    "rimraf": "^5.0.7",
+    "tsx": "^4.15.4"
+  }
+}

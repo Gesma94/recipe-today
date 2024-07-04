@@ -1,0 +1,10 @@
+{
+  "extends": "./../../tsconfig.json",
+  "compilerOptions": {
+    /* TSC transpiling */
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": ["ES2022"]
+  },
+  "include": ["./process-env.d.ts", "./src"]
+}

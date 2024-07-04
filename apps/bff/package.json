@@ -1,0 +1,30 @@
+{
+  "name": "@recipe-today/bff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "lint": "pnpm exec eslint . --fix",
+    "format": "pnpm exec prettier . --write",
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm run clean && tsc",
+    "test": "echo \"Passed\""
+  },
+  "keywords": [],
+  "author": "Matteo Gesmundo",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "@recipe-today/prisma": "workspace:*",
+    "@recipe-today/common": "workspace:*",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.7",
+    "tsx": "^4.15.4"
+  }
+}

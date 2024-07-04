@@ -1,0 +1,21 @@
+{
+  "extends": "./../../tsconfig.json",
+  "compilerOptions": {
+    /* TSC transpiling */
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    /* Strictness */
+    "useDefineForClassFields": true,
+
+    /* Bundler mode */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: scope
+    ignore:
+      - dependency-name: "eslint"
+        versions: ["9.x"]
+  - package-ecosystem: "npm"
+    directory: "/apps/webapp"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: scope
+  - package-ecosystem: "npm"
+    directory: "/apps/bff"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: scope
+  - package-ecosystem: "npm"
+    directory: "/packages/common"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: scope
+  - package-ecosystem: "npm"
+    directory: "/packages/prisma"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: scope

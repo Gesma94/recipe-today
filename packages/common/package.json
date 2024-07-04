@@ -1,0 +1,26 @@
+{
+  "name": "@recipe-today/common",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    "./utils": "./dist/utils/index.js",
+    "./types": "./dist/types/index.js"
+  },
+  "types": "dist",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "pnpm run clean && tsc",
+    "build:dev": "pnpm run clean && tsc -p ./tsconfig.dev.json",
+    "lint": "pnpm exec eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "pnpm exec prettier . --write",
+    "test": "echo \"Passed\""
+  },
+  "keywords": [],
+  "author": "Matteo Gesmundo",
+  "license": "AGPL-3.0-only",
+  "devDependencies": {
+    "rimraf": "^5.0.7"
+  }
+}
