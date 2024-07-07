@@ -2,12 +2,12 @@
   "name": "@recipe-today/bff",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/main.js",
+  "main": "dist/entry.js",
   "type": "module",
   "scripts": {
     "clean": "rimraf dist",
-    "dev": "tsx watch src/main.ts",
-    "start": "node dist/main.js",
+    "dev": "tsx watch src/entry.ts",
+    "start": "node dist/entry.js",
     "lint": "pnpm exec eslint . --fix",
     "format": "pnpm exec prettier . --write",
     "typecheck": "tsc --noEmit",
@@ -18,12 +18,25 @@
   "author": "Matteo Gesmundo",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@recipe-today/prisma": "workspace:*",
+    "@fastify/autoload": "^5.10.0",
+    "@fastify/cors": "^9.0.1",
+    "@graphql-tools/graphql-file-loader": "^8.0.1",
+    "@graphql-tools/load": "^8.0.2",
+    "@graphql-tools/merge": "^9.0.4",
+    "@graphql-tools/schema": "^10.0.4",
     "@recipe-today/common": "workspace:*",
+    "@recipe-today/prisma": "workspace:*",
     "dotenv": "^16.4.5",
-    "fastify": "^4.28.0"
+    "fastify": "^4.28.0",
+    "fastify-plugin": "^4.5.1",
+    "firebase-admin": "^12.2.0",
+    "graphql": "^16.9.0",
+    "mercurius": "^14.1.0",
+    "mercurius-codegen": "^5.0.5",
+    "openai": "^4.52.3"
   },
   "devDependencies": {
+    "@graphql-eslint/eslint-plugin": "^3.20.1",
     "rimraf": "^5.0.7",
     "tsx": "^4.15.4"
   }

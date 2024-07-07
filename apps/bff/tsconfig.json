@@ -6,5 +6,6 @@
     "rootDir": "./src",
     "lib": ["ES2022"]
   },
-  "include": ["./process-env.d.ts", "./src"]
+  "include": ["./process-env.d.ts", "./src"],
+  "exclude": ["node_modules", "**/*.graphql"]
 }
