@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "prisma": "^5.15.0",
+    "prisma": "^5.16.1",
     "rimraf": "^5.0.7",
     "tsx": "^4.15.4"
   }
