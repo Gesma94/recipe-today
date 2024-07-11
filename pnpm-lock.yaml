@@ -88,9 +88,6 @@ importers:
       graphql:
         specifier: ^16.9.0
         version: 16.9.0
-      graphql-config:
-        specifier: ^5.0.3
-        version: 5.0.3(@types/node@20.14.2)(graphql@16.9.0)(typescript@5.4.5)
       mercurius:
         specifier: ^14.1.0
         version: 14.1.0(graphql@16.9.0)
