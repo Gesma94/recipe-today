@@ -6,3 +6,20 @@ type User {
   id: ID!
   name: String!
 }
+
+input CreateUserInput {
+  firebaseUid: String
+  displayName: String
+  email: String
+  password: String
+}
+
+type CreateUserPayload {
+  data: User
+  success: Boolean!
+  error: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): CreateUserPayload
+}

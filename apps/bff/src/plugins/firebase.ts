@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
 import { cert, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
 import { FASTIFY_PLUGINS_NAME_KEY } from "../common/const.js";
 
@@ -14,7 +15,12 @@ const serviceAccount: ServiceAccount = {
   privateKey: process.env.FIREBASE_PRIVATE_KEY,
 };
 
-export default async (fastify: FastifyInstance) => {
-  const firebaseApp = initializeApp({ credential: cert(serviceAccount) });
-  fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.firebase, firebaseApp);
-};
+export default fp(
+  async (fastify: FastifyInstance) => {
+    const firebaseApp = initializeApp({ credential: cert(serviceAccount) });
+    fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.firebase, firebaseApp);
+  },
+  {
+    name: FASTIFY_PLUGINS_NAME_KEY.firebase,
+  },
+);

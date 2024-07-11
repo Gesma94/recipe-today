@@ -1,4 +1,5 @@
-import type { IResolvers } from "@graphql-tools/utils";
+import type { IResolvers } from "mercurius";
+import { createUser } from "../mutations/createUser.js";
 
 const users = [
   { id: "1", name: "Alice" },
@@ -8,6 +9,9 @@ const users = [
 const resolvers: IResolvers = {
   Query: {
     users: () => users,
+  },
+  Mutation: {
+    createUser: createUser,
   },
 };
 
