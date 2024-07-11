@@ -1,0 +1,3 @@
+projects:
+  bff:
+    schema: ./apps/bff/src/**/*.graphql
