@@ -81,8 +81,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       fastify:
-        specifier: ^4.28.0
-        version: 4.28.0
+        specifier: ^4.28.1
+        version: 4.28.1
       fastify-plugin:
         specifier: ^4.5.1
         version: 4.5.1
@@ -107,7 +107,7 @@ importers:
         version: 5.0.2
       mercurius-codegen:
         specifier: ^5.0.5
-        version: 5.0.5(fastify@4.28.0)(graphql@16.9.0)(mercurius@14.1.0(graphql@16.9.0))(prettier@3.3.2)
+        version: 5.0.5(fastify@4.28.1)(graphql@16.9.0)(mercurius@14.1.0(graphql@16.9.0))(prettier@3.3.2)
       rimraf:
         specifier: ^5.0.7
         version: 5.0.7
@@ -2187,8 +2187,8 @@ packages:
   fastify-plugin@4.5.1:
     resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
 
-  fastify@4.28.0:
-    resolution: {integrity: sha512-HhW7UHW07YlqH5qpS0af8d2Gl/o98DhJ8ZDQWHRNDnzeOhZvtreWsX8xanjGgXmkYerGbo8ax/n40Dpwqkot8Q==}
+  fastify@4.28.1:
+    resolution: {integrity: sha512-kFWUtpNr4i7t5vY2EJPCN2KgMVpuqfU4NjnJNCgiNB900oiDeYqaNDRcAfeBbOF5hGixixxcKnOU4KN9z6QncQ==}
 
   fastparallel@2.4.1:
     resolution: {integrity: sha512-qUmhxPgNHmvRjZKBFUNI0oZuuH9OlSIOXmJ98lhKPxMZZ7zS/Fi0wRHOihDSz0R1YiIOjxzOY4bq65YTcdBi2Q==}
@@ -6670,7 +6670,7 @@ snapshots:
 
   fastify-plugin@4.5.1: {}
 
-  fastify@4.28.0:
+  fastify@4.28.1:
     dependencies:
       '@fastify/ajv-compiler': 3.5.0
       '@fastify/error': 3.4.1
@@ -7581,7 +7581,7 @@ snapshots:
 
   meow@12.1.1: {}
 
-  mercurius-codegen@5.0.5(fastify@4.28.0)(graphql@16.9.0)(mercurius@14.1.0(graphql@16.9.0))(prettier@3.3.2):
+  mercurius-codegen@5.0.5(fastify@4.28.1)(graphql@16.9.0)(mercurius@14.1.0(graphql@16.9.0))(prettier@3.3.2):
     dependencies:
       '@graphql-codegen/core': 3.1.0(graphql@16.9.0)
       '@graphql-codegen/plugin-helpers': 4.2.0(graphql@16.9.0)
@@ -7594,7 +7594,7 @@ snapshots:
       '@graphql-tools/utils': 10.3.1(graphql@16.9.0)
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.9.0)
       chokidar: 3.6.0
-      fastify: 4.28.0
+      fastify: 4.28.1
       graphql: 16.9.0
       mercurius: 14.1.0(graphql@16.9.0)
       mkdirp: 2.1.6
