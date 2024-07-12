@@ -1,0 +1,9 @@
+enum ErrorType {
+  INTERNAL_ERROR
+  VALIDATION_ERROR
+}
+
+interface Response {
+  success: Boolean!
+  error: ErrorType
+}

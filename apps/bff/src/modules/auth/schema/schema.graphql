@@ -14,10 +14,10 @@ input CreateUserInput {
   password: String
 }
 
-type CreateUserPayload {
+type CreateUserPayload implements Response {
   data: User
   success: Boolean!
-  error: String!
+  error: ErrorType
 }
 
 type Mutation {
