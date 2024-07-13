@@ -3,12 +3,28 @@ import autoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import Fastify from "fastify";
+import { minimatch } from "minimatch";
+import fastifyRoutes from "@fastify/routes";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: process.env.NODE_ENV === "development" ? "debug" : "info",
+  },
+});
+
+fastify.register(fastifyRoutes);
+
+// registering all routes in 'routes' folder
+fastify.register(autoLoad, {
+  dir: join(__dirname, "modules"),
+  dirNameRoutePrefix: false,
+  matchFilter: path => minimatch(path, "**/routes/*.ts"),
+  options: {
+    prefix: "/api",
+  },
 });
 
 // registering all plugins in 'plugins' folder

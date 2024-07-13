@@ -1,4 +1,5 @@
 import fastify from "./app.js";
+import { getPrintableRoutes as printRoutes } from "./utils/printRoutes.js";
 
 const port = process.env.PORT ? Number(process.env.PORT) : 7717;
 
@@ -8,6 +9,7 @@ try {
       throw err;
     } else {
       fastify.log.debug(`Listening at ${address}`);
+      printRoutes(fastify);
     }
   });
 } catch (error) {
