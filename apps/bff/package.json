@@ -45,7 +45,7 @@
     "@graphql-eslint/eslint-plugin": "^3.20.1",
     "@types/bcrypt": "^5.0.2",
     "mercurius-codegen": "^5.0.5",
-    "rimraf": "^5.0.7",
+    "rimraf": "^6.0.1",
     "tsx": "^4.15.4"
   }
 }
