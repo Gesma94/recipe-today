@@ -9,7 +9,7 @@
     "dist"
   ],
   "types": "dist",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm run clean && tsc",

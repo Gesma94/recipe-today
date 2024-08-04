@@ -1,14 +1,10 @@
 import autoLoad from "@fastify/autoload";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { join } from "path";
 import Fastify from "fastify";
 import { minimatch } from "minimatch";
 import fastifyRoutes from "@fastify/routes";
 
 export function buildFastify() {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-
   const fastify = Fastify({
     logger: {
       level: process.env.NODE_ENV === "development" ? "debug" : "info",

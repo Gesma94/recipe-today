@@ -7,7 +7,7 @@
     "./types": "./dist/types/index.js"
   },
   "types": "dist",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm run clean && tsc",
