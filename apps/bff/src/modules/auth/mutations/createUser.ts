@@ -1,6 +1,5 @@
-import type { InputMaybe, MutationResolvers } from "../../../@types/mercurius-generated.js";
+import type { MutationResolvers } from "../../../@types/mercurius-generated.js";
 import { ErrorType } from "../../../@types/mercurius-generated.js";
-import bcrypt from "bcrypt";
 
 export const createUser: MutationResolvers["createUser"] = async (_parent, args, contextValue) => {
   const { displayName, email, firebaseUid, password } = args.input;
@@ -41,13 +40,11 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
     };
   }
 
-  const hashedPassword = getHashedPassword(password);
-
   contextValue.app.repositories.authRepository.createUser({
     displayName,
     email,
     firebaseUid,
-    password: hashedPassword,
+    password: contextValue.app.passwordHasher.hashPassword(password),
   });
 
   return {
@@ -55,11 +52,3 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
     success: true,
   };
 };
-
-function getHashedPassword(password: InputMaybe<string> | undefined): string | undefined {
-  if (!password) {
-    return undefined;
-  }
-
-  return bcrypt.hashSync(password, 2);
-}

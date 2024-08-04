@@ -1,4 +1,3 @@
-import "dotenv/config";
 import autoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -6,38 +5,40 @@ import Fastify from "fastify";
 import { minimatch } from "minimatch";
 import fastifyRoutes from "@fastify/routes";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export function buildFastify() {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-const fastify = Fastify({
-  logger: {
-    level: process.env.NODE_ENV === "development" ? "debug" : "info",
-  },
-});
+  const fastify = Fastify({
+    logger: {
+      level: process.env.NODE_ENV === "development" ? "debug" : "info",
+    },
+  });
 
-fastify.register(fastifyRoutes);
+  fastify.register(fastifyRoutes);
 
-// registering all routes in 'routes' folder
-fastify.register(autoLoad, {
-  dir: join(__dirname, "modules"),
-  dirNameRoutePrefix: false,
-  matchFilter: path => minimatch(path, "**/routes/*.ts"),
-  options: {
-    prefix: "/api",
-  },
-});
+  // registering all routes in 'routes' folder
+  fastify.register(autoLoad, {
+    dir: join(__dirname, "modules"),
+    dirNameRoutePrefix: false,
+    matchFilter: path => minimatch(path, "**/routes/*.ts"),
+    options: {
+      prefix: "/api",
+    },
+  });
 
-// registering all plugins in 'plugins' folder
-fastify.register(autoLoad, {
-  dir: join(__dirname, "plugins"),
-});
+  // registering all plugins in 'plugins' folder
+  fastify.register(autoLoad, {
+    dir: join(__dirname, "plugins"),
+  });
 
-fastify.get("/ping", (_, reply) => {
-  reply.send({ ping: "pong" });
-});
+  fastify.get("/ping", (_, reply) => {
+    reply.send({ ping: "pong" });
+  });
 
-fastify.get("/env", (_, reply) => {
-  reply.send({ env: process.env.SERVER_COMMON_ENV });
-});
+  fastify.get("/env", (_, reply) => {
+    reply.send({ env: process.env.SERVER_COMMON_ENV });
+  });
 
-export default fastify;
+  return fastify;
+}
