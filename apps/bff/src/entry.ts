@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { buildFastify } from "./app.js";
-import { getPrintableRoutes as printRoutes } from "./utils/printRoutes.js";
+import { getPrintableRoutes } from "./utils/printRoutes.js";
 
 const app = buildFastify();
 const port = process.env.PORT ? Number(process.env.PORT) : 7717;
@@ -11,7 +11,7 @@ try {
       throw err;
     } else {
       app.log.debug(`Listening at ${address}`);
-      printRoutes(app);
+      getPrintableRoutes(app);
     }
   });
 } catch (error) {
