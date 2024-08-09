@@ -12,7 +12,7 @@
     "format": "pnpm exec prettier . --write",
     "typecheck": "tsc --noEmit",
     "build": "pnpm run clean && tsc",
-    "test": "echo \"Passed\"",
+    "test": "vitest",
     "graphql-codegen": "tsx graphql.codegen.ts"
   },
   "keywords": [],
@@ -39,7 +39,8 @@
     "graphql": "^16.9.0",
     "mercurius": "^14.1.0",
     "minimatch": "^10.0.1",
-    "openai": "^4.52.3"
+    "openai": "^4.52.3",
+    "vitest": "^2.0.5"
   },
   "devDependencies": {
     "@graphql-eslint/eslint-plugin": "^3.20.1",
