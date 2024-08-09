@@ -37,8 +37,8 @@
   },
   "lint-staged": {
     "./**/*.{js,jsx,ts,tsx,json}": [
-      "pnpm run format",
-      "pnpm run lint"
+      "eslint --fix",
+      "prettier --write"
     ]
   },
   "commitlint": {
