@@ -16,4 +16,4 @@ dist
 .env.docker
 
 # Codegen files
-mercurius-generated.ts
+graphql-generated.ts

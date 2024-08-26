@@ -1,13 +1,18 @@
-import { codegenMercurius } from "mercurius-codegen";
-import fastify from "./src/app";
+import { CodegenConfig } from "@graphql-codegen/cli";
 
-codegenMercurius(fastify, {
-  targetPath: "src/@types/mercurius-generated.ts",
-  codegenConfig: {
+const config: CodegenConfig = {
+  schema: ["./src/**/*.graphql"],
+  config: {
     useTypeImports: true,
-    noSchemaStitching: true,
     scalars: {
       DateTime: "Date",
     },
   },
-});
+  generates: {
+    "./src/@types/graphql-generated.ts": {
+      plugins: ["typescript", "typescript-resolvers"],
+    },
+  },
+};
+
+export default config;

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist",
+    "clean:codegen": "rimraf ./src/@types/graphql-generated.ts",
     "dev": "tsx watch src/entry.ts",
     "start": "node dist/entry.js",
     "lint": "pnpm exec eslint . --fix",
@@ -13,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "build": "pnpm run clean && tsc",
     "test": "vitest",
-    "graphql-codegen": "tsx graphql.codegen.ts"
+    "graphql-codegen": "pnpm run clean:codegen && npx graphql-code-generator --config ./graphql.codegen.ts"
   },
   "keywords": [],
   "author": "Matteo Gesmundo",
@@ -43,9 +44,10 @@
     "vitest": "^2.0.5"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript-resolvers": "^4.2.1",
     "@graphql-eslint/eslint-plugin": "^3.20.1",
     "@types/bcrypt": "^5.0.2",
-    "mercurius-codegen": "^5.0.5",
     "rimraf": "^5.0.7",
     "tsx": "^4.15.4"
   }

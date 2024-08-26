@@ -11,15 +11,13 @@ import userResolver from "./../modules/auth/resolvers/resolvers.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// cannot be used with vitest
+// !WORKAROUND: loadFileSync is not working with vitest and ts files; manually loading all resolvers here
 // const resolverArray = loadFilesSync(path.join(__dirname, "./../modules/**/resolvers.ts"));
 const typeDefArray = loadFilesSync(path.join(__dirname, "./../modules/**/schema.graphql"));
 
 const schema = makeExecutableSchema({
   typeDefs: mergeTypeDefs(typeDefArray),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resolvers: mergeResolvers([userResolver] as any),
-  // 'as any' is a workaround because of missmatch in types IResolvers of graphql-tools and mercurius
+  resolvers: mergeResolvers([userResolver]),
 });
 
 export default fp(async (fastify: FastifyInstance) => {

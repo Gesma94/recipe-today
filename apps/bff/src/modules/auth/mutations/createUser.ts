@@ -1,5 +1,4 @@
-import type { MutationResolvers } from "../../../@types/mercurius-generated.js";
-import { ErrorType } from "../../../@types/mercurius-generated.js";
+import { ErrorType, type MutationResolvers } from "../../../@types/graphql-generated.js";
 
 export const createUser: MutationResolvers["createUser"] = async (_parent, args, contextValue) => {
   const { displayName, email, firebaseUid, password } = args.input;
@@ -9,7 +8,7 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
 
     return {
       success: false,
-      error: ErrorType.INTERNAL_ERROR,
+      error: ErrorType.InternalError,
     };
   }
 
@@ -18,7 +17,7 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
 
     return {
       success: false,
-      error: ErrorType.INTERNAL_ERROR,
+      error: ErrorType.InternalError,
     };
   }
 
@@ -27,7 +26,7 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
 
     return {
       success: false,
-      error: ErrorType.INTERNAL_ERROR,
+      error: ErrorType.InternalError,
     };
   }
 
@@ -36,7 +35,7 @@ export const createUser: MutationResolvers["createUser"] = async (_parent, args,
 
     return {
       success: false,
-      error: ErrorType.INTERNAL_ERROR,
+      error: ErrorType.InternalError,
     };
   }
 
