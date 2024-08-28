@@ -1,7 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { FastifyPluginAsync } from "fastify";
 import { COOKIES_NAME } from "../../../common/const.js";
-import { getTokens } from "../common/getTokens.js";
 
 const schema = Type.Object({
   Body: Type.Object({
@@ -27,7 +26,7 @@ const loginRoute: FastifyPluginAsync = async fastify => {
       return;
     }
 
-    const { accessToken, refreshToken } = getTokens(fastify, {
+    const { accessToken, refreshToken } = fastify.tokens.generateTokens({
       displayName: user.displayName,
       email: user.email,
       id: user.id,
