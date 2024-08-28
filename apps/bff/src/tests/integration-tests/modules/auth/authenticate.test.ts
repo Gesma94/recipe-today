@@ -2,41 +2,28 @@ import "dotenv/config";
 import { it, expect, beforeAll, afterAll, describe } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { buildFastify } from "../../../../app.js";
-import { getTokens } from "../../../../modules/auth/common/getTokens.js";
-import type { UserPayload } from "../../../../plugins/jwt.js";
-import { getPrintableRoutes } from "../../../../utils/printRoutes.js";
+import { COOKIES_NAME } from "../../../../common/const.js";
 
-it("test", () => {
-  expect(1).toBe(1);
-});
-
-let app: FastifyInstance;
-
-beforeAll(async () => {
-  app = buildFastify();
-  app.listen({ port: 1301, host: "0.0.0.0" });
-
-  await app.ready().then(() => {
-    console.log("then");
-    getPrintableRoutes(app);
-  });
-});
-
-afterAll(() => {
-  app.close();
-});
-
-const generateValidTokens = (userPayload: UserPayload) => {
-  const { accessToken, refreshToken } = getTokens(app, userPayload);
-  return { accessToken, refreshToken };
-};
+const userPayload = { id: 7, email: "test@example.com", displayName: "Test User" };
 
 // // const generateInvalidToken = () => 'invalid.token.value';
 
 describe("GET /authenticate", () => {
-  it("should return user data if JWT is valid", async () => {
-    const mockUser = { id: 7, email: "test@example.com", displayName: "Test User" };
-    const { accessToken } = generateValidTokens(mockUser);
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = buildFastify();
+    app.listen({ port: 1301, host: "0.0.0.0" });
+
+    await app.ready();
+  });
+
+  afterAll(() => {
+    app.close();
+  });
+
+  it("returns error if valid access token is passed via 'Authorization' header", async () => {
+    const { accessToken } = app.tokens.generateTokens(userPayload);
 
     const response = await app.inject({
       method: "GET",
@@ -44,44 +31,112 @@ describe("GET /authenticate", () => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual(mockUser);
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({
+      error: {
+        statusCode: 401,
+        name: "FastifyError",
+        code: "FST_JWT_NO_AUTHORIZATION_IN_COOKIE",
+        message: "No Authorization was found in request.cookies",
+      },
+    });
   });
 
-  // //   it('should return new tokens and user data if refresh token is valid', async () => {
-  // //     const mockUser = { email: 'test@example.com', displayName: 'Test User' };
-  // //     const { refreshToken } = generateValidTokens(mockUser);
+  it("returns error if unsigned access token is in cookie", async () => {
+    const { accessToken } = app.tokens.generateTokens(userPayload);
 
-  // //     const response = await supertest(app.server)
-  // //       .get('/authenticate')
-  // //       .set('Cookie', [`${COOKIES_NAME.refreshToken}=${refreshToken}`]);
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/authenticate",
+      cookies: { [COOKIES_NAME.accessToken]: accessToken },
+    });
 
-  // //     expect(response.status).toBe(200);
-  // //     expect(response.body).toEqual(mockUser);
-  // //     expect(response.headers['set-cookie']).toEqual(
-  // //       expect.arrayContaining([
-  // //         expect.stringContaining(`${COOKIES_NAME.accessToken}`),
-  // //         expect.stringContaining(`${COOKIES_NAME.refreshToken}`)
-  // //       ])
-  // //     );
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({
+      error: {
+        code: "RT_INVALID_ACCESS_TOKEN",
+        message: "Invalid access token was found in request.cookies",
+        name: "RecipeTodayError",
+        statusCode: 401,
+      },
+    });
+  });
+
+  it("returns user data if signed valid access token is in cookie", async () => {
+    const { accessToken } = app.tokens.generateTokens(userPayload);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/authenticate",
+      cookies: { [COOKIES_NAME.accessToken]: app.signCookie(accessToken) },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject(userPayload);
+  });
+
+  it("returns error if expired access token is provided and no refresh token is provided", async () => {
+    const accessToken = app.tokens.generateToken(userPayload, "1ms");
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/authenticate",
+      cookies: { [COOKIES_NAME.accessToken]: app.signCookie(accessToken) },
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({
+      error: {
+        code: "RT_INVALID_REFRESH_TOKEN",
+        message: "Invalid refresh token was found in request.cookies",
+        name: "RecipeTodayError",
+        statusCode: 401,
+      },
+    });
+  });
+
+  it("returns user data and save tokens in cookie when expired access token and valid refresh token are provided", async () => {
+    const accessToken = app.tokens.generateToken(userPayload, "1ms");
+    const refreshToken = app.tokens.generateRefreshToken(userPayload);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/authenticate",
+      cookies: { [COOKIES_NAME.refreshToken]: refreshToken, [COOKIES_NAME.accessToken]: app.signCookie(accessToken) },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual(userPayload);
+
+    const accessTokenCookie = response.cookies.find(cookie => cookie.name == COOKIES_NAME.accessToken);
+    const refreshTokenCookie = response.cookies.find(cookie => cookie.name == COOKIES_NAME.refreshToken);
+
+    expect(accessTokenCookie).toBeDefined();
+    expect(refreshTokenCookie).toBeDefined();
+    expect(accessTokenCookie?.httpOnly).toBeTruthy();
+    expect(refreshTokenCookie?.httpOnly).toBeTruthy();
+  });
+
+  it("returns error when expired access token and invalid refresh token are provided", async () => {
+    const accessToken = app.tokens.generateToken(userPayload, "1ms");
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/authenticate",
+      cookies: {
+        [COOKIES_NAME.refreshToken]: "invalid_refresh_token",
+        [COOKIES_NAME.accessToken]: app.signCookie(accessToken),
+      },
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({
+      error: {
+        code: "RT_INVALID_REFRESH_TOKEN",
+        message: "Invalid refresh token was found in request.cookies",
+        name: "RecipeTodayError",
+        statusCode: 401,
+      },
+    });
+  });
 });
-
-// //   it('should return 401 if refresh token is not available', async () => {
-// //     const response = await supertest(app.server)
-// //       .get('/authenticate');
-
-// //     expect(response.status).toBe(401);
-// //     expect(response.body).toEqual({ error: 'refresh token not available' });
-// //   });
-
-// //   it('should return 401 if refresh token is invalid', async () => {
-// //     const invalidRefreshToken = generateInvalidToken();
-
-// //     const response = await supertest(app.server)
-// //       .get('/authenticate')
-// //       .set('Cookie', [`${COOKIES_NAME.refreshToken}=${invalidRefreshToken}`]);
-
-// //     expect(response.status).toBe(401);
-// //     expect(response.body).toEqual({ error: 'cannot authenticate with refresh token' });
-// //   });
-// // });
