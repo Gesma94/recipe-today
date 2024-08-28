@@ -2,9 +2,10 @@ export const FASTIFY_PLUGINS_NAME_KEY = {
   firebase: "firebase",
   openai: "openai",
   prisma: "prisma",
+  cookie: "cookie",
   repositories: "repositories",
   passwordHasher: "passwordHasher",
-  refreshTokens: "refreshTokens",
+  tokens: "tokens",
 } as const;
 
 export const COOKIES_NAME = {
