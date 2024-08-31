@@ -3,8 +3,9 @@ import { it, expect, beforeAll, afterAll, describe } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { buildFastify } from "../../../../app.js";
 import { COOKIES_NAME } from "../../../../common/const.js";
+import type { UserPayload } from "../../../../common/types.js";
 
-const userPayload = { id: 7, email: "test@example.com", displayName: "Test User" };
+const userPayload: UserPayload = { id: 7, email: "test@example.com", displayName: "Test User", provider: "native" };
 
 // // const generateInvalidToken = () => 'invalid.token.value';
 
