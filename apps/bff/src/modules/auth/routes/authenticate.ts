@@ -1,65 +1,56 @@
-import type { FastifyPluginAsync } from "fastify";
-import { COOKIES_NAME } from "../../../common/const.js";
-import { Type, type Static, type TObject, type TProperties } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import type { FastifyPluginAsync, FastifySchema } from "fastify";
+import { COOKIES_NAME, ERROR_CODE } from "../../../common/const.js";
+import { Type, type Static } from "@sinclair/typebox";
+import { ErrorSchema, getSchemaWithError, hasErrorSchema } from "../../../common/type-schemas.js";
 
-const ErrorSchema = Type.Object({
-  code: Type.String(),
-  message: Type.String(),
-  name: Type.String(),
-  statusCode: Type.Number(),
+const UserSchema = Type.Object({
+  id: Type.Number(),
+  email: Type.String(),
+  displayName: Type.String(),
+  provider: Type.Union([Type.Literal("native"), Type.Literal("google")]),
 });
 
-function getSchemaWithError<T extends TProperties>(schemaObject: TObject<T>) {
-  return Type.Union([schemaObject, ErrorSchema]);
-}
+const ReplySchema = getSchemaWithError(UserSchema);
 
-const schema = Type.Object({
-  Reply: Type.Object({
-    email: Type.Optional(Type.String()),
-    id: Type.Optional(Type.Number()),
-    displayName: Type.Optional(Type.String()),
-    error: Type.Optional(ErrorSchema),
-  }),
-});
-
-type SchemaType = Static<typeof schema>;
+const schema: FastifySchema = {
+  response: {
+    200: UserSchema,
+    401: ErrorSchema,
+  },
+};
 
 const loginRoute: FastifyPluginAsync = async fastify => {
-  fastify.get<SchemaType>("/authenticate", { schema: getSchemaWithError(schema) }, async (request, reply) => {
-    // checks if user is already authenticated via JWT and retrieve its email and displayName
+  fastify.get<{ Reply: Static<typeof ReplySchema> }>("/authenticate", { schema }, async (request, reply) => {
     try {
       await request.jwtVerify({ onlyCookie: true });
-      const { email, displayName, id } = request.user;
 
-      reply.send({ displayName, email, id });
-      return;
+      return reply.send({
+        displayName: request.user.displayName,
+        email: request.user.email,
+        id: request.user.id,
+        provider: request.user.provider,
+      });
     } catch (error) {
-      if (Value.Check(ErrorSchema, error)) {
-        if (error.code === "FST_JWT_AUTHORIZATION_TOKEN_EXPIRED") {
-          fastify.log.info("JWT access token is not verified, attempts with the refresh token");
-        } else {
-          reply.status(401).send({ error });
-          return;
+      if (hasErrorSchema(error)) {
+        if (error.code !== ERROR_CODE.FST_JWT_AUTHORIZATION_TOKEN_EXPIRED) {
+          return reply.status(401).send({ error });
         }
       } else {
-        reply.status(401).send({
+        return reply.status(401).send({
           error: {
-            code: "RT_INVALID_ACCESS_TOKEN",
+            code: ERROR_CODE.RT_INVALID_ACCESS_TOKEN,
             message: "Invalid access token was found in request.cookies",
             name: "RecipeTodayError",
             statusCode: 401,
           },
         });
-        return;
       }
     }
 
-    // if JWT access token is not verified, attempts with the refresh token
     const { refreshToken } = request.cookies;
 
     if (!refreshToken) {
-      reply.status(401).send({
+      return reply.status(401).send({
         error: {
           code: "RT_INVALID_REFRESH_TOKEN",
           message: "Invalid refresh token was found in request.cookies",
@@ -67,7 +58,6 @@ const loginRoute: FastifyPluginAsync = async fastify => {
           statusCode: 401,
         },
       });
-      return;
     }
 
     try {
@@ -77,7 +67,7 @@ const loginRoute: FastifyPluginAsync = async fastify => {
         userPayload,
       } = fastify.tokens.refreshTokens(refreshToken);
 
-      reply
+      return reply
         .setCookie(COOKIES_NAME.accessToken, newAccessToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -86,9 +76,14 @@ const loginRoute: FastifyPluginAsync = async fastify => {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
         })
-        .send({ email: userPayload.email, displayName: userPayload.displayName, id: userPayload.id });
+        .send({
+          provider: userPayload.provider,
+          email: userPayload.email,
+          displayName: userPayload.displayName,
+          id: userPayload.id,
+        });
     } catch (error) {
-      reply.status(401).send({
+      return reply.status(401).send({
         error: {
           code: "RT_INVALID_REFRESH_TOKEN",
           message: "Invalid refresh token was found in request.cookies",
@@ -96,7 +91,6 @@ const loginRoute: FastifyPluginAsync = async fastify => {
           statusCode: 401,
         },
       });
-      return;
     }
   });
 };
