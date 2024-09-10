@@ -44,11 +44,16 @@
     "vitest": "^2.0.5"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/typescript-resolvers": "^4.2.1",
     "@graphql-eslint/eslint-plugin": "^3.20.1",
+    "@testcontainers/postgresql": "^10.13.0",
     "@types/bcrypt": "^5.0.2",
+    "cross-env": "^7.0.3",
     "rimraf": "^5.0.7",
-    "tsx": "^4.15.4"
+    "testcontainers": "^10.13.0",
+    "tsx": "^4.15.4",
+    "type-fest": "^4.26.0"
   }
 }
