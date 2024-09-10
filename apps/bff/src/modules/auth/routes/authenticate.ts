@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync, FastifySchema } from "fastify";
-import { COOKIES_NAME, ERROR_CODE } from "../../../common/const.js";
+import { COOKIES_NAME, ErrorCode } from "../../../common/const.js";
 import { Type, type Static } from "@sinclair/typebox";
-import { ErrorSchema, getSchemaWithError, hasErrorSchema } from "../../../common/type-schemas.js";
+import { ErrorSchema, getReplySchemaWithError, hasErrorSchema } from "../../../common/schemas/response-error-schema.js";
 
 const UserSchema = Type.Object({
   id: Type.Number(),
@@ -10,7 +10,7 @@ const UserSchema = Type.Object({
   provider: Type.Union([Type.Literal("native"), Type.Literal("google")]),
 });
 
-const ReplySchema = getSchemaWithError(UserSchema);
+const ReplySchema = getReplySchemaWithError(UserSchema);
 
 const schema: FastifySchema = {
   response: {
@@ -32,13 +32,13 @@ const loginRoute: FastifyPluginAsync = async fastify => {
       });
     } catch (error) {
       if (hasErrorSchema(error)) {
-        if (error.code !== ERROR_CODE.FST_JWT_AUTHORIZATION_TOKEN_EXPIRED) {
+        if (error.code !== ErrorCode.FST_JWT_AUTHORIZATION_TOKEN_EXPIRED) {
           return reply.status(401).send({ error });
         }
       } else {
         return reply.status(401).send({
           error: {
-            code: ERROR_CODE.RT_INVALID_ACCESS_TOKEN,
+            code: ErrorCode.RT_INVALID_ACCESS_TOKEN,
             message: "Invalid access token was found in request.cookies",
             name: "RecipeTodayError",
             statusCode: 401,
@@ -52,7 +52,7 @@ const loginRoute: FastifyPluginAsync = async fastify => {
     if (!refreshToken) {
       return reply.status(401).send({
         error: {
-          code: "RT_INVALID_REFRESH_TOKEN",
+          code: ErrorCode.RT_INVALID_ACCESS_TOKEN,
           message: "Invalid refresh token was found in request.cookies",
           name: "RecipeTodayError",
           statusCode: 401,
@@ -85,7 +85,7 @@ const loginRoute: FastifyPluginAsync = async fastify => {
     } catch (error) {
       return reply.status(401).send({
         error: {
-          code: "RT_INVALID_REFRESH_TOKEN",
+          code: ErrorCode.RT_INVALID_REFRESH_TOKEN,
           message: "Invalid refresh token was found in request.cookies",
           name: "RecipeTodayError",
           statusCode: 401,
