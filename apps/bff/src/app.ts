@@ -1,24 +1,35 @@
 import autoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import Fastify from "fastify";
+import Fastify, { type LogLevel } from "fastify";
 import { minimatch } from "minimatch";
 import fastifyRoutes from "@fastify/routes";
 
-export function buildFastify() {
+function getLogLevel(): LogLevel {
+  switch (process.env.NODE_ENV) {
+    case "test":
+      return "silent";
+    case "development":
+      return "debug";
+    default:
+      return "info";
+  }
+}
+
+export async function buildFastify() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
   const fastify = Fastify({
     logger: {
-      level: process.env.NODE_ENV === "development" ? "debug" : "info",
+      level: getLogLevel(),
     },
   });
 
-  fastify.register(fastifyRoutes);
+  await fastify.register(fastifyRoutes);
 
   // registering all routes in 'routes' folder
-  fastify.register(autoLoad, {
+  await fastify.register(autoLoad, {
     dir: join(__dirname, "modules"),
     dirNameRoutePrefix: false,
     matchFilter: path => minimatch(path, "**/routes/*.ts"),
@@ -28,7 +39,7 @@ export function buildFastify() {
   });
 
   // registering all plugins in 'plugins' folder
-  fastify.register(autoLoad, {
+  await fastify.register(autoLoad, {
     dir: join(__dirname, "plugins"),
   });
 

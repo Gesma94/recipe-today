@@ -2,7 +2,7 @@ import "dotenv/config";
 import { buildFastify } from "./app.js";
 import { getPrintableRoutes } from "./utils/printRoutes.js";
 
-const app = buildFastify();
+const app = await buildFastify();
 const port = process.env.PORT ? Number(process.env.PORT) : 7717;
 
 try {
