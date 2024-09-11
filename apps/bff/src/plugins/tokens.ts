@@ -1,7 +1,7 @@
 import fp from "fastify-plugin";
 import type { FastifyInstance } from "fastify";
 import { FASTIFY_PLUGINS_NAME_KEY } from "../common/const.js";
-import type { UserPayload } from "../common/types.js";
+import type { UserPayload } from "../common/schemas/user-schema.js";
 
 type TokensDecorator = {
   generateAccessToken: (userPayload: UserPayload) => string;

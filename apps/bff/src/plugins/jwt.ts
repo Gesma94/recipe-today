@@ -2,7 +2,7 @@ import fp from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
 import type { FastifyInstance } from "fastify";
 import { COOKIES_NAME } from "../common/const.js";
-import type { UserPayload } from "../common/types.js";
+import type { UserPayload } from "../common/schemas/user-schema.js";
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
