@@ -4,6 +4,9 @@ CREATE TYPE "ChatStatus" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
 -- CreateEnum
 CREATE TYPE "MessageRole" AS ENUM ('USER', 'SYSTEM', 'ASSISTANT');
 
+-- CreateEnum
+CREATE TYPE "UserProvider" AS ENUM ('EMAIL', 'GOOGLE');
+
 -- CreateTable
 CREATE TABLE "Chat" (
     "id" SERIAL NOT NULL,
@@ -37,6 +40,7 @@ CREATE TABLE "User" (
     "displayName" TEXT NOT NULL,
     "password" TEXT,
     "email" TEXT NOT NULL,
+    "provider" "UserProvider"[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

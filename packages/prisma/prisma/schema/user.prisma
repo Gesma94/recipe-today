@@ -1,3 +1,8 @@
+enum UserProvider {
+  EMAIL
+  GOOGLE
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   firebase_uid String?  @unique
@@ -6,5 +11,6 @@ model User {
   displayName  String   @unique
   password     String?  @unique
   email        String   @unique
+  provider     UserProvider[]
   chat         Chat[]
 }
