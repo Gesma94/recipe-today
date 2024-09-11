@@ -40,7 +40,7 @@ CREATE TABLE "User" (
     "displayName" TEXT NOT NULL,
     "password" TEXT,
     "email" TEXT NOT NULL,
-    "provider" "UserProvider"[],
+    "provider" "UserProvider" NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

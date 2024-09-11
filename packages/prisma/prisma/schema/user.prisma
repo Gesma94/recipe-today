@@ -11,6 +11,6 @@ model User {
   displayName  String   @unique
   password     String?  @unique
   email        String   @unique
-  provider     UserProvider[]
+  provider     UserProvider
   chat         Chat[]
 }
