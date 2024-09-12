@@ -1,47 +1,52 @@
 import { Type, type Static } from "@sinclair/typebox";
-import type { FastifyPluginAsync } from "fastify";
-import { COOKIES_NAME } from "../../../common/const.js";
+import type { FastifyPluginAsync, FastifySchema } from "fastify";
+import { ErrorCode } from "../../../common/const.js";
+import { getReplySchemaWithError, ResponseErrorSchema } from "../../../common/schemas/response-error-schema.js";
+import { UserPayloadSchema } from "../../../common/schemas/user-schema.js";
+import { $Enums } from "@recipe-today/prisma";
+import { getUserPayload } from "../../../common/utils/get-user-payload.js";
 
-const schema = Type.Object({
-  Body: Type.Object({
-    email: Type.String({ format: "email" }),
-    password: Type.String(),
-  }),
-  Reply: Type.Object({
-    error: Type.Optional(Type.String()),
-  }),
+const ReplySchema = getReplySchemaWithError(UserPayloadSchema);
+
+const BodySchema = Type.Object({
+  email: Type.String({ format: "email" }),
+  password: Type.String({ minLength: 6 }),
 });
 
-type SchemaType = Static<typeof schema>;
+const schema: FastifySchema = {
+  body: BodySchema,
+  response: {
+    200: UserPayloadSchema,
+    400: ResponseErrorSchema,
+  },
+};
+
+type RouteInterface = {
+  Body: Static<typeof BodySchema>;
+  Reply: Static<typeof ReplySchema>;
+};
 
 const loginRoute: FastifyPluginAsync = async fastify => {
-  fastify.post<SchemaType>("/login", { schema }, async (request, reply) => {
+  fastify.post<RouteInterface>("/login", { schema }, async (request, reply) => {
     const { email, password } = request.body;
+    const hashedPassword = fastify.passwordHasher.hashPassword(password);
+
     const user = await fastify.prisma.user.findFirst({
-      where: { email, password: fastify.passwordHasher.hashPassword(password) },
+      where: { email, password: hashedPassword, provider: $Enums.UserProvider.EMAIL },
     });
 
     if (!user) {
-      reply.code(400).send({ error: "Invalid" });
-      return;
+      return reply.status(400).send({
+        error: {
+          statusCode: 400,
+          name: "InvalidCredentials",
+          code: ErrorCode.RT_InvalidCredentials,
+          message: "User not found with provided credentials",
+        },
+      });
     }
 
-    const { accessToken, refreshToken } = fastify.tokens.generateTokens({
-      displayName: user.displayName,
-      email: user.email,
-      id: user.id,
-    });
-
-    reply
-      .setCookie(COOKIES_NAME.accessToken, accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      })
-      .setCookie(COOKIES_NAME.refreshToken, refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      })
-      .send({ email: user.email, displayName: user.displayName });
+    return reply.getAndSetAuthCookies(user).status(200).send(getUserPayload(user));
   });
 };
 

@@ -1,12 +1,14 @@
 import { Type, type Static } from "@sinclair/typebox";
 import type { FastifyPluginAsync, FastifySchema } from "fastify";
-import { COOKIES_NAME, ErrorCode, UserProvider } from "../../../common/const.js";
+import { ErrorCode } from "../../../common/const.js";
 import { UserPayloadSchema } from "../../../common/schemas/user-schema.js";
 import {
   getReplySchemaWithError,
   hasErrorSchema,
   ResponseErrorSchema,
 } from "../../../common/schemas/response-error-schema.js";
+import { getUserPayload } from "../../../common/utils/get-user-payload.js";
+import { $Enums } from "@recipe-today/prisma";
 
 const ReplySchema = getReplySchemaWithError(UserPayloadSchema);
 
@@ -66,35 +68,12 @@ const signUpRoute: FastifyPluginAsync = async fastify => {
         data: {
           email,
           displayName,
+          provider: $Enums.UserProvider.EMAIL,
           password: fastify.passwordHasher.hashPassword(password),
         },
       });
 
-      const { accessToken, refreshToken } = fastify.tokens.generateTokens({
-        id: newUser.id,
-        provider: "native",
-        email: newUser.email,
-        displayName: newUser.displayName,
-      });
-
-      reply
-        .setCookie(COOKIES_NAME.accessToken, accessToken, {
-          httpOnly: true,
-          path: "/",
-          signed: true,
-          secure: process.env.NODE_ENV === "production",
-        })
-        .setCookie(COOKIES_NAME.refreshToken, refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        });
-
-      return reply.status(200).send({
-        id: newUser.id,
-        email: newUser.email,
-        provider: UserProvider.Native,
-        displayName: newUser.displayName,
-      });
+      return reply.getAndSetAuthCookies(newUser).status(200).send(getUserPayload(newUser));
     } catch (error) {
       if (hasErrorSchema(error)) {
         return reply.status(400).send({ error });
