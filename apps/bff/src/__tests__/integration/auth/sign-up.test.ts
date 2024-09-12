@@ -32,7 +32,7 @@ describe("POST /sign-up", () => {
     expect(response.statusCode).toBe(200);
     expect(bodyResponse.email).toBe(email);
     expect(bodyResponse.displayName).toBe(displayName);
-    expect(bodyResponse.provider).toBe(UserProvider.Native);
+    expect(bodyResponse.provider).toBe(UserProvider.Email);
     expect(Value.Check(UserPayloadSchema, bodyResponse)).toBe(true);
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.accessToken)).toBeTruthy();
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.refreshToken)).toBeTruthy();

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { User } from "@recipe-today/prisma";
+import { $Enums, type User } from "@recipe-today/prisma";
 
 export function createFakerUser(id: number, override?: Partial<Omit<User, "id">>): User {
   return {
@@ -10,6 +10,7 @@ export function createFakerUser(id: number, override?: Partial<Omit<User, "id">>
     createdAt: new Date(),
     displayName: faker.internet.displayName(),
     updatedAt: new Date(),
+    provider: $Enums.UserProvider.EMAIL,
     ...override,
   };
 }

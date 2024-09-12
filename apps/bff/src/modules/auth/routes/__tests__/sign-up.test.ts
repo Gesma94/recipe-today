@@ -167,8 +167,8 @@ describe("POST /sign-up", () => {
     expect(response.statusCode).toBe(200);
     expect(bodyResponse.id).toBe(newUser.id);
     expect(bodyResponse.email).toBe(newUser.email);
+    expect(bodyResponse.provider).toBe(UserProvider.Email);
     expect(bodyResponse.displayName).toBe(newUser.displayName);
-    expect(bodyResponse.provider).toBe(UserProvider.Native);
     expect(Value.Check(UserPayloadSchema, bodyResponse)).toBe(true);
 
     expect(response.cookies).toHaveLength(2);
