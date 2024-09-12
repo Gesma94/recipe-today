@@ -3,3 +3,6 @@
 
 echo "Running 'lint-staged' command in pre-commit hook..."
 pnpm lint-staged
+
+echo "Running 'pnpm build' command in pre-commit hook..."
+pnpm build
