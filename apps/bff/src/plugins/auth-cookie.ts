@@ -6,15 +6,15 @@ import { getUserPayload } from "../common/utils/get-user-payload.js";
 
 declare module "fastify" {
   interface FastifyReply {
-    getAndSetAuthCookies: (this: FastifyReply, user: User) => void;
-    setAuthCookies: (this: FastifyReply, accessToken: string, refreshToken: string) => void;
+    getAndSetAuthCookies: <T extends FastifyReply>(this: T, user: User) => T;
+    setAuthCookies: <T extends FastifyReply>(this: T, accessToken: string, refreshToken: string) => T;
   }
 }
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.getAndSetAuthCookies, function (this, user) {
     const { accessToken, refreshToken } = fastify.tokens.generateTokens(getUserPayload(user));
-    this.setAuthCookies(accessToken, refreshToken);
+    return this.setAuthCookies(accessToken, refreshToken);
   });
 
   fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.setAuthCookies, function (this, accessToken, refreshToken) {
@@ -29,5 +29,7 @@ export default fp(async (fastify: FastifyInstance) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
+
+    return this;
   });
 });
