@@ -3,7 +3,7 @@ export const FASTIFY_PLUGINS_NAME_KEY = {
   openai: "openai",
   prisma: "prisma",
   cookie: "cookie",
-  passwordHasher: "passwordHasher",
+  bcrypt: "bcrypt",
   setAuthCookies: "setAuthCookies",
   getAndSetAuthCookies: "getAndSetAuthCookies",
   tokens: "tokens",
