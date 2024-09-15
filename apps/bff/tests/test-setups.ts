@@ -1,11 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { beforeEach, afterEach } from "vitest";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { exec } from "child_process";
-import { promisify } from "util";
 import { buildFastify } from "../src/app.js";
-
-const execPromise = promisify(exec);
+import { execSync } from "node:child_process";
 
 export type TestDbEnvironmentContext = {
   app: FastifyInstance;
@@ -19,8 +16,7 @@ export function setupTestDbEnvironment() {
 
       const dbConnectionUri = context.dbContainer.getConnectionUri();
 
-      await execPromise(`npx cross-env DATABASE_URL=${dbConnectionUri} pnpm --filter prisma migrate:dev`);
-      await execPromise(`npx cross-env DATABASE_URL=${dbConnectionUri} pnpm --filter prisma seed`);
+      execSync(`pnpm --filter prisma db:push`, { env: { DATABASE_URL: dbConnectionUri } });
 
       context.app = await buildFastify({ customEnvs: { DATABASE_URL: dbConnectionUri } });
 
