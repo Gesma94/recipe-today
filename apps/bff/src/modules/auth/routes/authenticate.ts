@@ -48,7 +48,7 @@ const authenticateRoute: FastifyPluginAsync = async fastify => {
     if (!refreshToken) {
       return reply.status(401).send({
         error: {
-          code: ErrorCode.RT_InvalidAccessToken,
+          code: ErrorCode.RT_InvalidRefreshToken,
           message: "Invalid refresh token was found in request.cookies",
           name: "InvalidRefreshToken",
           statusCode: 401,
