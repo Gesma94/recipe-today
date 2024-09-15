@@ -3,6 +3,7 @@ import fp from "fastify-plugin";
 import { cert, deleteApp, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { FASTIFY_PLUGINS_NAME_KEY } from "../common/const.js";
+import { v4 as uuidv4 } from "uuid";
 
 type FirebaseDecorator = {
   app: App;
@@ -22,7 +23,8 @@ const serviceAccount: ServiceAccount = {
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    const firebaseApp = initializeApp({ credential: cert(serviceAccount) });
+    const uniqueAppName = uuidv4();
+    const firebaseApp = initializeApp({ credential: cert(serviceAccount) }, uniqueAppName);
 
     fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.firebase, {
       app: firebaseApp,
