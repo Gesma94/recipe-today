@@ -41,6 +41,7 @@
     "mercurius": "^14.1.0",
     "minimatch": "^10.0.1",
     "openai": "^4.52.3",
+    "uuid": "^10.0.0",
     "vitest": "^2.0.5"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "@graphql-eslint/eslint-plugin": "^3.20.1",
     "@testcontainers/postgresql": "^10.13.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^10.0.0",
     "cross-env": "^7.0.3",
     "rimraf": "^5.0.7",
     "testcontainers": "^10.13.0",
