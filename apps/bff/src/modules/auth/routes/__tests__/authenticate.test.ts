@@ -139,7 +139,7 @@ describe("GET /authenticate", () => {
     expect(refreshTokenCookie?.httpOnly).toBeTruthy();
   });
 
-  it.skip("returns error when expired access token and invalid refresh token are provided", async () => {
+  it("returns error when expired access token and invalid refresh token are provided", async () => {
     const accessToken = app.tokens.generateToken(userPayload, "1ms");
 
     const response = await app.inject({
