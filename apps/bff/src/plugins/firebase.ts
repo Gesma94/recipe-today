@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { cert, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
+import { cert, deleteApp, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { FASTIFY_PLUGINS_NAME_KEY } from "../common/const.js";
 
@@ -27,6 +27,11 @@ export default fp(
     fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.firebase, {
       app: firebaseApp,
       auth: getAuth(firebaseApp),
+    });
+
+    fastify.addHook("onClose", async innerFastify => {
+      innerFastify.log.info("deleting firebase app");
+      await deleteApp(firebaseApp);
     });
   },
   {
