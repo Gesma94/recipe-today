@@ -11,25 +11,28 @@ declare module "fastify" {
   }
 }
 
-export default fp(async (fastify: FastifyInstance) => {
-  fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.getAndSetAuthCookies, function (this, user) {
-    const { accessToken, refreshToken } = fastify.tokens.generateTokens(getUserPayload(user));
-    return this.setAuthCookies(accessToken, refreshToken);
-  });
-
-  fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.setAuthCookies, function (this, accessToken, refreshToken) {
-    this.setCookie(COOKIES_NAME.accessToken, accessToken, {
-      path: "/",
-      signed: true,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+export default fp(
+  async (fastify: FastifyInstance) => {
+    fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.getAndSetAuthCookies, function (this, user) {
+      const { accessToken, refreshToken } = fastify.tokens.generateTokens(getUserPayload(user));
+      return this.setAuthCookies(accessToken, refreshToken);
     });
 
-    this.setCookie(COOKIES_NAME.refreshToken, refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+    fastify.decorateReply(FASTIFY_PLUGINS_NAME_KEY.setAuthCookies, function (this, accessToken, refreshToken) {
+      this.setCookie(COOKIES_NAME.accessToken, accessToken, {
+        path: "/",
+        signed: true,
+        httpOnly: true,
+        secure: fastify.env.NODE_ENV === "production",
+      });
 
-    return this;
-  });
-});
+      this.setCookie(COOKIES_NAME.refreshToken, refreshToken, {
+        httpOnly: true,
+        secure: fastify.env.NODE_ENV === "production",
+      });
+
+      return this;
+    });
+  },
+  { dependencies: [FASTIFY_PLUGINS_NAME_KEY.env] },
+);
