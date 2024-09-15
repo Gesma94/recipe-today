@@ -46,8 +46,6 @@ export async function buildFastify(options?: BuildOptions) {
   // registering env plugin first
   await fastify.register(envPlugin, { customEnvs: customEnvs });
 
-  console.log(fastify.env);
-
   // once we have the environment variables in fastify app, setting the log level
   fastify.log.level = getLogLevel(fastify);
 
