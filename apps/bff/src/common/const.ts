@@ -1,6 +1,7 @@
 export const FASTIFY_PLUGINS_NAME_KEY = {
   firebase: "firebase",
   openai: "openai",
+  env: "env",
   prisma: "prisma",
   cookie: "cookie",
   bcrypt: "bcrypt",
