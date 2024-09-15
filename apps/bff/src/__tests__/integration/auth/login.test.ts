@@ -7,7 +7,7 @@ import { COOKIES_NAME, ErrorCode, UserProvider } from "../../../common/const.js"
 import { $Enums } from "@recipe-today/prisma";
 import { ResponseErrorSchema, type ResponseError } from "../../../common/schemas/response-error-schema.js";
 
-describe("POST /login", () => {
+describe.concurrent("POST /login", () => {
   setupTestDbEnvironment();
 
   it<TestDbEnvironmentContext>("returns 400 if user not found", async ({ app, expect }) => {
