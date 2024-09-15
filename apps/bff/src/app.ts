@@ -1,12 +1,14 @@
 import autoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import Fastify, { type LogLevel } from "fastify";
+import Fastify, { type FastifyInstance, type LogLevel } from "fastify";
 import { minimatch } from "minimatch";
 import fastifyRoutes from "@fastify/routes";
+import envPlugin from "./plugins/env.js";
+import type { Environment } from "./common/schemas/env-schema.js";
 
-function getLogLevel(): LogLevel {
-  switch (process.env.NODE_ENV) {
+function getLogLevel(app: FastifyInstance): LogLevel {
+  switch (app.env.NODE_ENV) {
     case "test":
       return "warn";
     case "development":
@@ -16,14 +18,17 @@ function getLogLevel(): LogLevel {
   }
 }
 
-export async function buildFastify() {
+type BuildOptions = {
+  customEnvs?: Partial<Environment>;
+};
+
+export async function buildFastify(options?: BuildOptions) {
+  const { customEnvs } = options ?? {};
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
   const fastify = Fastify({
-    logger: {
-      level: getLogLevel(),
-    },
+    logger: true,
   });
 
   await fastify.register(fastifyRoutes);
@@ -38,9 +43,18 @@ export async function buildFastify() {
     },
   });
 
-  // registering all plugins in 'plugins' folder
+  // registering env plugin first
+  await fastify.register(envPlugin, { customEnvs: customEnvs });
+
+  console.log(fastify.env);
+
+  // once we have the environment variables in fastify app, setting the log level
+  fastify.log.level = getLogLevel(fastify);
+
+  // registering all plugins in 'plugins' folder, except "env" which is registered before
   await fastify.register(autoLoad, {
     dir: join(__dirname, "plugins"),
+    ignorePattern: /env.ts/,
   });
 
   fastify.get("/ping", (_, reply) => {
@@ -48,7 +62,7 @@ export async function buildFastify() {
   });
 
   fastify.get("/env", (_, reply) => {
-    reply.send({ env: process.env.SERVER_COMMON_ENV });
+    reply.send({ env: fastify.env.SERVER_COMMON_ENV });
   });
 
   return fastify;

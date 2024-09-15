@@ -6,10 +6,11 @@ import { FASTIFY_PLUGINS_NAME_KEY } from "../common/const.js";
 export default fp(
   async (fastify: FastifyInstance) => {
     fastify.register(fastifyCookie, {
-      secret: process.env.COOKIE_SECRET_KEY,
+      secret: fastify.env.COOKIE_SECRET_KEY,
     });
   },
   {
     name: FASTIFY_PLUGINS_NAME_KEY.cookie,
+    dependencies: [FASTIFY_PLUGINS_NAME_KEY.env],
   },
 );

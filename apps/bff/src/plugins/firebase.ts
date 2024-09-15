@@ -15,15 +15,15 @@ declare module "fastify" {
   }
 }
 
-const serviceAccount: ServiceAccount = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY,
-};
-
 export default fp(
   async (fastify: FastifyInstance) => {
     const uniqueAppName = uuidv4();
+    const serviceAccount: ServiceAccount = {
+      projectId: fastify.env.FIREBASE_PROJECT_ID,
+      clientEmail: fastify.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: fastify.env.FIREBASE_PRIVATE_KEY,
+    };
+
     const firebaseApp = initializeApp({ credential: cert(serviceAccount) }, uniqueAppName);
 
     fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.firebase, {

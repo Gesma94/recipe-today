@@ -11,10 +11,11 @@ declare module "fastify" {
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
+    const openai = new OpenAI({ apiKey: fastify.env.OPEN_AI_API_KEY });
     fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.openai, openai);
   },
   {
     name: FASTIFY_PLUGINS_NAME_KEY.openai,
+    dependencies: [FASTIFY_PLUGINS_NAME_KEY.env],
   },
 );

@@ -11,7 +11,7 @@ declare module "fastify" {
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    const prismaClient = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
+    const prismaClient = new PrismaClient({ datasourceUrl: fastify.env.DATABASE_URL });
 
     await prismaClient.$connect();
 
