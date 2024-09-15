@@ -8,7 +8,7 @@ import fastifyRoutes from "@fastify/routes";
 function getLogLevel(): LogLevel {
   switch (process.env.NODE_ENV) {
     case "test":
-      return "silent";
+      return "warn";
     case "development":
       return "debug";
     default:

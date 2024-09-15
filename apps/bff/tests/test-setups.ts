@@ -36,7 +36,8 @@ export function setupTestDbEnvironment() {
       await context.app.listen({ port: 0, host: "0.0.0.0" });
       await context.app.ready();
     } catch (error) {
-      throw new Error("Error while executing setup for test with DB environment");
+      console.error("Error while executing setup for test with DB environment");
+      throw error;
     }
   });
 
@@ -45,7 +46,6 @@ export function setupTestDbEnvironment() {
       process.env.DATABASE_URL = context.originalDatabaseUrl;
     }
 
-    context.app.firebase.app;
     await context.dbContainer?.stop();
     await context.app?.close();
   });
