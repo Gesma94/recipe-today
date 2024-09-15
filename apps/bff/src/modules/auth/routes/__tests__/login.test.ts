@@ -11,11 +11,10 @@ import { getPrismaClientMock } from "../../../../../tests/mocks/prisma-mock.js";
 import { faker } from "@faker-js/faker";
 
 const prismaClientMock = getPrismaClientMock();
-
 vi.mock(import("@recipe-today/prisma"), async importOriginal => {
   return {
     ...(await importOriginal()),
-    PrismaClient: vi.fn(() => prismaClientMock),
+    PrismaClient: vi.fn().mockImplementation(() => prismaClientMock),
   };
 });
 
