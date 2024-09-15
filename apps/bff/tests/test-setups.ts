@@ -9,19 +9,19 @@ const execPromise = promisify(exec);
 
 export type TestDbEnvironmentContext = {
   app: FastifyInstance;
+  originalDatabaseUrl: string;
+  hasDatabaseUrlUpdated: boolean;
   dbContainer: StartedPostgreSqlContainer;
 };
 
 export function setupTestDbEnvironment() {
-  let originalDatabaseUrl: string;
-  let hasDatabaseUrlUpdated: boolean = false;
-
   beforeEach<TestDbEnvironmentContext>(async context => {
     try {
+      context.hasDatabaseUrlUpdated = false;
       context.dbContainer = await new PostgreSqlContainer().start();
 
-      hasDatabaseUrlUpdated = true;
-      originalDatabaseUrl = process.env.DATABASE_URL;
+      context.hasDatabaseUrlUpdated = true;
+      context.originalDatabaseUrl = process.env.DATABASE_URL;
       process.env.DATABASE_URL = context.dbContainer.getConnectionUri();
 
       await execPromise(
@@ -33,7 +33,7 @@ export function setupTestDbEnvironment() {
 
       context.app = await buildFastify();
 
-      await context.app.listen({ port: 1301, host: "0.0.0.0" });
+      await context.app.listen({ port: 0, host: "0.0.0.0" });
       await context.app.ready();
     } catch (error) {
       throw new Error("Error while executing setup for test with DB environment");
@@ -41,10 +41,11 @@ export function setupTestDbEnvironment() {
   });
 
   afterEach<TestDbEnvironmentContext>(async context => {
-    if (hasDatabaseUrlUpdated) {
-      process.env.DATABASE_URL = originalDatabaseUrl;
+    if (context.hasDatabaseUrlUpdated) {
+      process.env.DATABASE_URL = context.originalDatabaseUrl;
     }
 
+    context.app.firebase.app;
     await context.dbContainer?.stop();
     await context.app?.close();
   });
