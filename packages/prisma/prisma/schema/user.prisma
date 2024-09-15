@@ -9,7 +9,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   displayName  String   @unique
-  password     String?  @unique
+  password     String?  @unique @db.VarChar(60)
   email        String   @unique
   provider     UserProvider
   chat         Chat[]

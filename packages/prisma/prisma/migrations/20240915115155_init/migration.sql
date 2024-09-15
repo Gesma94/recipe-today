@@ -38,7 +38,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "displayName" TEXT NOT NULL,
-    "password" TEXT,
+    "password" VARCHAR(60),
     "email" TEXT NOT NULL,
     "provider" "UserProvider" NOT NULL,
 
