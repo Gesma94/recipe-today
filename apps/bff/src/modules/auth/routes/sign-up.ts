@@ -69,7 +69,7 @@ const signUpRoute: FastifyPluginAsync = async fastify => {
           email,
           displayName,
           provider: $Enums.UserProvider.EMAIL,
-          password: fastify.passwordHasher.hashPassword(password),
+          password: fastify.bcrypt.hashSync(password),
         },
       });
 

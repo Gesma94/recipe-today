@@ -5,25 +5,32 @@ import bcrypt from "bcrypt";
 
 declare module "fastify" {
   interface FastifyInstance {
-    [FASTIFY_PLUGINS_NAME_KEY.passwordHasher]: typeof passwordHasher;
+    [FASTIFY_PLUGINS_NAME_KEY.bcrypt]: typeof passwordHasher;
   }
 }
 
 const passwordHasher = {
-  hashPassword: (password: string | null | undefined): string | undefined => {
-    if (!password) {
+  hashSync: (data: string | null | undefined): string | undefined => {
+    if (!data) {
       return undefined;
     }
 
-    return bcrypt.hashSync(password, 2);
+    return bcrypt.hashSync(data, 2);
+  },
+  compareSync: (plainText: string | null | undefined, hash: string | null | undefined): boolean => {
+    if (!plainText || !hash) {
+      return false;
+    }
+
+    return bcrypt.compareSync(plainText, hash);
   },
 };
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.passwordHasher, passwordHasher);
+    fastify.decorate(FASTIFY_PLUGINS_NAME_KEY.bcrypt, passwordHasher);
   },
   {
-    name: FASTIFY_PLUGINS_NAME_KEY.passwordHasher,
+    name: FASTIFY_PLUGINS_NAME_KEY.bcrypt,
   },
 );

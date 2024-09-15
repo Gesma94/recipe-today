@@ -29,13 +29,12 @@ type RouteInterface = {
 const loginRoute: FastifyPluginAsync = async fastify => {
   fastify.post<RouteInterface>("/login", { schema }, async (request, reply) => {
     const { email, password } = request.body;
-    const hashedPassword = fastify.passwordHasher.hashPassword(password);
 
     const user = await fastify.prisma.user.findFirst({
-      where: { email, password: hashedPassword, provider: $Enums.UserProvider.EMAIL },
+      where: { email, provider: $Enums.UserProvider.EMAIL },
     });
 
-    if (!user) {
+    if (!user || !fastify.bcrypt.compareSync(password, user.password)) {
       return reply.status(400).send({
         error: {
           statusCode: 400,
