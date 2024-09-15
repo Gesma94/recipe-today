@@ -6,13 +6,6 @@
     "rootDir": "./",
     "lib": ["ES2022"]
   },
-  "include": [
-    "./process-env.d.ts",
-    "./vitest.config.ts",
-    "./vitest.setup.ts",
-    "graphql.codegen.ts",
-    "./src",
-    "./tests"
-  ],
+  "include": ["./vitest.config.ts", "./vitest.setup.ts", "graphql.codegen.ts", "./src", "./tests"],
   "exclude": ["node_modules", "**/*.graphql"]
 }
