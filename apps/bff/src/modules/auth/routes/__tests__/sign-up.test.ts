@@ -19,7 +19,7 @@ vi.mock(import("@recipe-today/prisma"), async importOriginal => {
 
 describe("POST /sign-up", () => {
   let app: FastifyInstance;
-  const db: User[] = [createFakerUser(0), createFakerUser(1)];
+  const db: [User, User] = [createFakerUser(0), createFakerUser(1)];
 
   beforeAll(async () => {
     app = await buildFastify();
@@ -37,7 +37,7 @@ describe("POST /sign-up", () => {
   });
 
   it("returns 400 if email is already in used", async () => {
-    prismaClientMock.user.findFirst.mockImplementation(async () => db[0] ?? null);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(db[0]);
 
     const response = await app.inject({
       method: "POST",
@@ -59,10 +59,13 @@ describe("POST /sign-up", () => {
     expect(bodyResponse.error.name).toBe("EmailAlreadyUsed");
     expect(bodyResponse.error.message).toBe("Email is already used");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
+    expect(prismaClientMock.user?.create).not.toHaveBeenCalled();
   });
 
   it("returns 400 if displayName is already in used", async () => {
-    prismaClientMock.user.findFirst.mockImplementation(async () => db[0] ?? null);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(db[0]);
 
     const response = await app.inject({
       method: "POST",
@@ -84,11 +87,14 @@ describe("POST /sign-up", () => {
     expect(bodyResponse.error.name).toBe("DisplayNameAlreadyUsed");
     expect(bodyResponse.error.message).toBe("Display name is already used");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
+    expect(prismaClientMock.user?.create).not.toHaveBeenCalled();
   });
 
   it("returns 400 if cannot create new user with custom error if catched error has not error schema", async () => {
-    prismaClientMock.user.findFirst.mockResolvedValue(null);
-    prismaClientMock.user.create.mockRejectedValueOnce(null);
+    prismaClientMock.user?.create?.mockRejectedValueOnce(db[0]);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(null);
 
     const response = await app.inject({
       method: "POST",
@@ -110,11 +116,14 @@ describe("POST /sign-up", () => {
     expect(bodyResponse.error.name).toBe("UserRegistrationFailed");
     expect(bodyResponse.error.message).toBe("Could not register the new user");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
+    expect(prismaClientMock.user?.create).toHaveBeenCalledOnce();
   });
 
   it("returns 400 if cannot create new user with specific error if catched error has error schema", async () => {
-    prismaClientMock.user.findFirst.mockResolvedValue(null);
-    prismaClientMock.user.create.mockRejectedValueOnce({
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(null);
+    prismaClientMock.user?.create?.mockRejectedValueOnce({
       statusCode: 400,
       name: "MockError",
       message: "Error from Mock",
@@ -141,13 +150,16 @@ describe("POST /sign-up", () => {
     expect(bodyResponse.error.name).toBe("MockError");
     expect(bodyResponse.error.message).toBe("Error from Mock");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
+    expect(prismaClientMock.user?.create).toHaveBeenCalledOnce();
   });
 
   it("returns 200 with new user and set cookie", async () => {
     const newUser = createFakerUser(3);
 
-    prismaClientMock.user.findFirst.mockResolvedValue(null);
-    prismaClientMock.user.create.mockResolvedValueOnce(newUser);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(null);
+    prismaClientMock.user?.create?.mockResolvedValueOnce(newUser);
 
     const response = await app.inject({
       method: "POST",
@@ -173,5 +185,8 @@ describe("POST /sign-up", () => {
     expect(response.cookies).toHaveLength(2);
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.accessToken)).toBeTruthy();
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.refreshToken)).toBeTruthy();
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
+    expect(prismaClientMock.user?.create).toHaveBeenCalledOnce();
   });
 });

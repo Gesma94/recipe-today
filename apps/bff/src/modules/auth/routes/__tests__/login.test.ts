@@ -38,7 +38,7 @@ describe("POST /login", () => {
   });
 
   it("returns 400 if user not found", async () => {
-    prismaClientMock.user.findFirst.mockImplementation(async () => null);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(null);
 
     const response = await app.inject({
       method: "POST",
@@ -59,13 +59,15 @@ describe("POST /login", () => {
     expect(bodyResponse.error.code).toBe(ErrorCode.RT_InvalidCredentials);
     expect(bodyResponse.error.message).toBe("User not found with provided credentials");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
   });
 
   it("returns 400 if password does not match", async () => {
     const hashedPassword = app.bcrypt.hashSync(db[0].password);
     const userWithHasedPassword = Object.assign<User, Partial<User>>({ ...db[0] }, { password: hashedPassword });
 
-    prismaClientMock.user.findFirst.mockImplementation(async () => userWithHasedPassword);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(userWithHasedPassword);
 
     const response = await app.inject({
       method: "POST",
@@ -86,13 +88,15 @@ describe("POST /login", () => {
     expect(bodyResponse.error.code).toBe(ErrorCode.RT_InvalidCredentials);
     expect(bodyResponse.error.message).toBe("User not found with provided credentials");
     expect(Value.Check(ResponseErrorSchema, bodyResponse)).toBe(true);
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
   });
 
   it("returns 200 with user details and set cookie", async () => {
     const hashedPassword = app.bcrypt.hashSync(db[0].password);
     const userWithHasedPassword = Object.assign<User, Partial<User>>({ ...db[0] }, { password: hashedPassword });
 
-    prismaClientMock.user.findFirst.mockImplementation(async () => userWithHasedPassword);
+    prismaClientMock.user?.findFirst?.mockResolvedValueOnce(userWithHasedPassword);
 
     const response = await app.inject({
       method: "POST",
@@ -117,5 +121,7 @@ describe("POST /login", () => {
     expect(response.cookies).toHaveLength(2);
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.accessToken)).toBeTruthy();
     expect(response.cookies.find(cookie => cookie.name === COOKIES_NAME.refreshToken)).toBeTruthy();
+
+    expect(prismaClientMock.user?.findFirst).toHaveBeenCalledOnce();
   });
 });
