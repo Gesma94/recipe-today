@@ -34,7 +34,7 @@
     "@recipe-today/prisma": "workspace:*",
     "@sinclair/typebox": "^0.32.34",
     "bcrypt": "^5.1.1",
-    "fastify": "^4.28.0",
+    "fastify": "^5.0.0",
     "fastify-plugin": "^4.5.1",
     "firebase-admin": "^12.2.0",
     "graphql": "^16.9.0",
